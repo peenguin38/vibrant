@@ -1,6 +1,7 @@
 __pycache__/
 *.pyc
 *.log
+*.css
 *.sqlite3
 *.zip
 .venv/
