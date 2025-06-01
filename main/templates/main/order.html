@@ -1,0 +1,283 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Оформление заказа — Vibrant Store</title>
+  <link rel="stylesheet" href="{% static 'main/css/main_two.css' %}">
+  <style>
+    /* контейнер */
+    .order-container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 50px auto;
+      padding: 30px;
+      background: #f9fdff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .order-container h1 {
+      text-align: center;
+      color: #00ccff;
+      margin-bottom: 30px;
+    }
+
+    /* === таблица заказа === */
+    .summary {
+      overflow: hidden;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-bottom: 40px;
+    }
+    .summary table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .summary thead th {
+      background: #e3f7ff;
+      color: #333;
+      font-weight: 600;
+      padding: 12px;
+      text-align: left;
+    }
+    .summary tbody tr:nth-child(even) {
+      background: #f9fdff;
+    }
+    .summary tbody td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+    }
+    .summary tfoot th {
+      padding: 12px;
+      font-size: 1.1em;
+    }
+
+    /* === самовывоз + оплата + карта === */
+    .pickup-payment-wrapper {
+      display: flex;
+      gap: 40px;
+      margin-bottom: 40px;
+      align-items: flex-start;
+    }
+    .pickup-payment-left {
+      flex: 1;
+    }
+    .pickup-payment-left h2 {
+      margin-bottom: 15px;
+    }
+    .pickup-list {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 30px;
+    }
+    .pickup-list li {
+      margin-bottom: 12px;
+    }
+    .pickup-list input {
+      margin-right: 8px;
+    }
+    /* сброс оформления блока оплаты */
+    .payment {
+      margin: 0;
+      padding: 0;
+      background: none;
+      border: none;
+    }
+    .payment h2 {
+      margin-bottom: 10px;
+    }
+    .payment label {
+      display: block;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .payment input {
+      margin-right: 8px;
+    }
+
+    .pickup-payment-right {
+      flex: 1;
+      min-width: 300px;
+    }
+    .pickup-payment-right .map {
+      width: 100%;
+      height: 300px;
+      border-radius: 8px;
+    }
+
+    /* кнопка */
+    .btn-order {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: #00ccff;
+      color: #fff;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .3s;
+      margin-top: 20px;
+    }
+    .btn-order:hover {
+      background: #ff99cc;
+    }
+  </style>
+</head>
+<body>
+
+<!--     Header -->
+<header class="header">
+  <a href="{% url 'index' %}" class="logo" style="text-decoration: none; color: #00ccff;">vibrant.</a>
+
+  <div class="search-bar">
+    <form action="{% url 'search_results' %}" method="GET">
+        <input type="text" name="q" placeholder="Поиск..." value="{{ request.GET.q }}">
+        <button type="submit">Искать</button>
+    </form>
+</div>
+  <div class="icons">
+    {% if user.is_authenticated %}
+      <span class="cart-btn">Добро пожаловать, {{ user.username }}!</span>
+      <form action="{% url 'logout' %}" method="post" style="display: inline; margin: 0;">
+        {% csrf_token %}
+        <button type="submit" class="cart-btn">🚪 Выйти</button>
+      </form>
+    {% else %}
+      <a href="{% url 'login' %}" class="cart-btn">👤 Вход и регистрация</a> <!-- Используем cart-btn -->
+    {% endif %}
+    {% if user.is_authenticated %}
+  <a href="{% url 'profile' %}"><button class="cart-btn">👤 Профиль</button></a>
+{% endif %}
+    <a href="{% url 'cart' %}">
+    <button class="cart-btn">🛒 Корзина</button>
+</a>
+  </div>
+</header>
+
+  <!-- Main Content -->
+  <main class="order-container">
+    <h1>Оформление заказа</h1>
+
+    <!-- Сводка заказа -->
+    <section class="summary">
+      <h2>Ваш заказ</h2>
+
+      <table>
+        <thead>
+          <tr><th>Товар</th><th>Кол-во</th><th>Цена (₽)</th></tr>
+        </thead>
+        <tbody>
+          {% for item in cart_items %}
+          <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.total_price|floatformat:2 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="2">Итого</th>
+            <th>{{ total_price|floatformat:2 }} ₽</th>
+          </tr>
+        </tfoot>
+      </table>
+    </section>
+
+    <form method="post">{% csrf_token %}
+      <div class="pickup-payment-wrapper">
+        <!-- левая колонка -->
+        <div class="pickup-payment-left">
+          <!-- Пункт самовывоза -->
+          <div class="pickup-info">
+            <h2>Пункт самовывоза</h2>
+            <ul class="pickup-list">
+              {% for p in pickup_points %}
+              <li>
+                <label>
+                  <input
+                    type="radio"
+                    name="pickup_location"
+                    value="{{ p.label }}"
+                    {% if forloop.first %}checked{% endif %}
+                  >
+                  <strong>{{ p.label }}</strong>
+                  (часы работы {{ p.hours }})
+                </label>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+          <!-- Способ оплаты -->
+          <div class="payment">
+            <h2>Способ оплаты</h2>
+            <label>
+              <input type="radio" name="payment_method" value="cash" checked>
+              Наличными при получении
+            </label>
+            <label>
+              <input type="radio" name="payment_method" value="card">
+              Картой при получении
+            </label>
+          </div>
+        </div>
+        <!-- правая колонка: карта -->
+        <div class="pickup-payment-right">
+          <div id="map" class="map"></div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-order">Подтвердить заказ</button>
+    </form>
+  </main>
+
+  <!-- Footer -->
+<footer class="footer">
+  <div class="footer-content">
+    <div class="logo">vibrant.</div>
+    <nav class="footer-nav">
+      <a href="{% url 'about' %}" class="about-link">О нас</a>
+    </nav>
+    <nav class="footer-nav">
+      <a>Контактный номер: 8 495 502-19-44 (9:00 - 21:00) без выходных</a>
+    </nav>
+    <div id="shop-status"></div> <!-- 👈 Новый блок -->
+  </div>
+</footer>
+
+  <!-- Скрипт статуса магазина -->
+  <script>
+    function updateShopStatus() {
+      const h = new Date().getHours();
+      const el = document.getElementById("shop-status");
+      if (h >= 9 && h < 21) {
+        el.textContent = "🟢 Магазин открыт";
+        el.style.color = "green";
+      } else {
+        el.textContent = "🔴 Магазин закрыт";
+        el.style.color = "red";
+      }
+    }
+    document.addEventListener("DOMContentLoaded", updateShopStatus);
+  </script>
+
+  <!-- Яндекс.Карты -->
+  <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU"></script>
+  <script>
+    ymaps.ready(() => {
+      const map = new ymaps.Map("map", {
+        center: [55.751574, 37.573856],
+        zoom: 10
+      });
+      const points = {{ pickup_points|safe }};
+      points.forEach(p => {
+        map.geoObjects.add(new ymaps.Placemark(p.coords, {
+          balloonContent: p.label
+        }));
+      });
+    });
+  </script>
+</body>
+</html>

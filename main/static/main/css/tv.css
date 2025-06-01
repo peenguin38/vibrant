@@ -1,0 +1,548 @@
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f8f9fa;
+}
+body, html {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  display: flex;
+}
+
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+}
+
+/* Content Wrapper */
+main {
+  flex-grow: 1;
+}
+
+img {
+  max-width: 100%;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background: #000;
+  color: #fff;
+}
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #00ccff;
+}
+
+.search-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-bar input {
+  width: 300px;
+  padding: 10px;
+  border: 2px solid #fff;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.search-bar button {
+  padding: 10px 20px;
+  background-color: #fff;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.search-bar button:hover {
+  background-color: #00ccff;
+}
+
+.icons button {
+  background: transparent;
+  border: 1px solid #fff;
+  color: #fff;
+  padding: 10px 15px;
+  font-size: 16px;
+  border-radius: 25px;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: background 0.3s;
+}
+
+.icons button:hover {
+  background: #00ccff;
+}
+
+/* Categories */
+.categories {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  padding: 15px;
+  background: #fff;
+}
+
+.categories button {
+  padding: 10px 15px;
+  border: 1px solid #00ccff;
+  border-radius: 8px;
+  background: #f8f9fa;
+  transition: background 0.3s;
+}
+
+.categories button:hover {
+  background: #00ccff;
+  color: #fff;
+}
+
+/* Main Content */
+.product-listing {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.filters-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.filters-btn, .sort-dropdown {
+  padding: 10px;
+  border: 1px solid #00ccff;
+  border-radius: 8px;
+  background: #fff;
+}
+
+/* Product Grid */
+.product-card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 120px; /* расстояние между карточками */
+  justify-content:  center; /* прижимаем карточки влево */
+  align-items: stretch;
+}
+
+
+/* Product Card */
+.product-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(90deg, #f4f4f4, #ffffff);
+  border-radius: 10px;
+  padding: 15px;
+  text-decoration: none;
+  color: #333;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, background 0.3s ease;
+  width: 100%;
+  max-width: 260px;
+  height: 500px; /* 👈 увеличили высоту карточки */
+  box-sizing: border-box;
+}
+
+.product-card img {
+  height: 240px;        /* 👈 увеличили высоту изображения */
+  width: auto;
+  object-fit: contain;  /* сохраняем пропорции, вписываем в блок */
+  margin-bottom: 10px;
+}
+
+.product-card h3 {
+  font-size: 16px;
+  min-height: 48px; /* фиксируем высоту заголовка */
+  margin: 10px 0;
+}
+
+.product-card p {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+
+/* Hover Effects */
+.product-card:hover {
+  background: #fff;
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  border: 2px solid #00ccff; /* 👉 добавили обводку */
+}
+
+/* Text and CTA Styling */
+.product-card h3, .product-card p {
+  margin: 10px 0;
+}
+
+/* Product Button */
+.product-card button {
+  background: #00ccff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+/* Hover Effect */
+.product-card button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .product-card-container {
+    grid-template-columns: repeat(3, 1fr); /* 3 товара в ряд */
+  }
+}
+
+@media (max-width: 768px) {
+  .product-card-container {
+    grid-template-columns: repeat(2, 1fr); /* 2 товара в ряд */
+  }
+}
+
+@media (max-width: 480px) {
+  .product-card-container {
+    grid-template-columns: 1fr; /* 1 товар в ряд */
+  }
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.page-btn {
+  padding: 10px 15px;
+  border: 1px solid #00ccff;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.page-btn.active {
+  background: #00ccff;
+  color: #fff;
+}
+
+/* Footer */
+.footer {
+  background: #333;
+  padding: 20px;
+  color: #fff;
+  position: relative;
+  bottom: 0;
+
+}
+
+.footer-content {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  gap: 20px;
+}
+
+.footer-nav {
+  display: flex;
+  align-items: center;
+}
+
+.about-link {
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.about-link:hover {
+  color: #ffcc00;
+}
+
+/* Общий стиль для всех кнопок */
+.cart-btn {
+    background-color: transparent;  /* Прозрачный фон */
+    color: white;                   /* Белый текст */
+    padding: 10px 20px;             /* Отступы */
+    border: 2px solid white;        /* Белая рамка */
+    border-radius: 25px;            /* Скругленные углы */
+    font-size: 14px;                /* Размер шрифта */
+    cursor: pointer;                /* Курсор при наведении */
+    text-decoration: none;          /* Без подчеркивания */
+    display: inline-flex;           /* Для выравнивания иконки */
+    align-items: center;            /* Центрирование текста */
+    gap: 8px;                       /* Отступ между иконкой и текстом */
+    transition: all 0.3s ease-in-out;
+}
+
+/* Стиль кнопки при наведении */
+.cart-btn:hover {
+    background-color: white;
+    color: black;
+}
+
+/* Убираем стандартный стиль у ссылок */
+.login-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px; /* Делаем высоту одинаковой */
+}
+.no-products {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.no-products h2 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 150px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  z-index: 10;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 10px;
+  display: block;
+  text-decoration: none;
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.logo a {
+  color: inherit;            /* Наследовать цвет от .logo */
+  text-decoration: none;     /* Убрать подчеркивание */
+}
+
+.logo a:hover {
+  color: inherit;            /* Не менять цвет при наведении */
+  text-decoration: none;     /* Не показывать подчеркивание */
+}
+
+.sort-form {
+  display: inline-block;
+}
+
+.sort-dropdown {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #f0f8ff;
+  border: 2px solid #00bfff;
+  border-radius: 10px;
+  padding: 10px 40px 10px 15px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #000;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='20,50 70,100 120,50' stroke='%2300bfff' stroke-width='15' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.sort-dropdown:hover {
+  border-color: #007acc;
+}
+
+.filter-drawer {
+  position: absolute;
+  top: 80px; /* под хедером */
+  left: 0;
+  width: 40%;
+  max-width: 400px;
+  background-color: #fff;
+  border-right: 1px solid #ddd;
+  padding: 20px;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  box-sizing: border-box;
+
+  /* заменяем левую на правую */
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+
+  transform: translateX(-110%);
+  transition: transform 0.3s ease-in-out;
+}
+
+
+/* Когда открыто */
+.filter-drawer.open {
+  transform: translateX(0);
+}
+
+/* Заголовок */
+.filter-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.filter-drawer-header h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+/* Кнопка закрытия */
+.drawer-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Содержимое */
+.filter-drawer-body {
+  max-height: none;
+  overflow: visible;
+}
+
+.filter-group {
+  margin-bottom: 20px;
+}
+
+.filter-checkbox input {
+  margin-right: 5px;
+}
+
+.apply-btn {
+  background-color: black;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s ease-in-out;
+}
+
+.apply-btn:hover {
+  background-color: #222;
+}
+
+.filter-drawer button.apply-btn {
+  background-color: #1a1a1a; /* основной цвет сайта */
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  margin-top: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.filter-drawer button.apply-btn:hover {
+  background-color: #333333;
+}
+
+.filter-drawer button.clear-btn {
+  background-color: transparent;
+  color: #555;
+  padding: 10px;
+  border: none;
+  font-size: 14px;
+  margin-left: 10px;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.filter-drawer button.clear-btn:hover {
+  color: #000;
+}
+
+.flash-message-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.flash-message {
+  background: #00ccff;
+  color: white;
+  padding: 14px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 260px;
+  animation: fadeOut 5s ease forwards;
+  position: relative;
+}
+
+.flash-message .close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  cursor: pointer;
+  font-size: 20px;
+  color: #fff;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; display: none; }
+}

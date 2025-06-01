@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibrant Store</title>
+  <link rel="stylesheet" href="{% static 'main/css/main_two.css' %}">
+</head>
+<!--     Header -->
+<header class="header">
+  <a href="{% url 'index' %}" class="logo" style="text-decoration: none; color: #00ccff;">vibrant.</a>
+
+  <div class="search-bar">
+    <form action="{% url 'search_results' %}" method="GET">
+        <input type="text" name="q" placeholder="Поиск..." value="{{ request.GET.q }}">
+        <button type="submit">Искать</button>
+    </form>
+</div>
+  <div class="icons">
+    {% if user.is_authenticated %}
+      <span class="cart-btn">Добро пожаловать, {{ user.username }}!</span>
+      <form action="{% url 'logout' %}" method="post" style="display: inline; margin: 0;">
+        {% csrf_token %}
+        <button type="submit" class="cart-btn">🚪 Выйти</button>
+      </form>
+    {% else %}
+      <a href="{% url 'login' %}" class="cart-btn">👤 Вход и регистрация</a> <!-- Используем cart-btn -->
+    {% endif %}
+    {% if user.is_authenticated %}
+  <a href="{% url 'profile' %}"><button class="cart-btn">👤 Профиль</button></a>
+{% endif %}
+    <a href="{% url 'cart' %}">
+    <button class="cart-btn">🛒 Корзина</button>
+</a>
+  </div>
+</header>
+{% if messages %}
+<div class="flash-message-container">
+  {% for message in messages %}
+    <div class="flash-message">
+      <span>{{ message }}</span>
+      <span class="close" onclick="this.parentElement.style.display='none'">×</span>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+<br>
+<h1 class="about-title" align="center">Регистрация</h1>
+        <section class="auth-section">
+            <div class="form-container">
+           <form method="post" action="{% url 'register' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="text" name="username" class="form-input" placeholder="Логин" required>
+            </div>
+            <div class="form-group">
+                <input type="email" name="email" class="form-input" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <input type="date" name="date_of_birth" class="form-input" placeholder="Дата рождения" required>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password1" class="form-input" placeholder="Пароль" required>
+            </div>
+            <div class="form-group">
+  <input type="password" name="password2" class="form-input" placeholder="Повторите пароль" required>
+  <small class="password-hint">
+    Пароль должен содержать минимум 8 символов, хотя бы одну заглавную букву, цифру и специальный символ.
+  </small>
+</div>
+
+            <button type="submit" class="form-button">Зарегистрироваться</button>
+        </form>
+                    <p>Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a></p>
+        </section>
+    </div>
+  <!-- Footer -->
+<footer class="footer">
+  <div class="footer-content">
+    <div class="logo">vibrant.</div>
+    <nav class="footer-nav">
+      <a href="{% url 'about' %}" class="about-link">О нас</a>
+    </nav>
+    <nav class="footer-nav">
+      <a>Контактный номер: 8 495 502-19-44 (9:00 - 21:00) без выходных</a>
+    </nav>
+    <div id="shop-status"></div> <!-- 👈 Новый блок -->
+  </div>
+</footer>
+<script>
+  function updateShopStatus() {
+    const now = new Date();
+    const hours = now.getHours();
+
+    const statusElement = document.getElementById("shop-status");
+
+    if (hours >= 9 && hours < 21) {
+      statusElement.textContent = "🟢 Магазин открыт";
+      statusElement.style.color = "green";
+    } else {
+      statusElement.textContent = "🔴 Магазин закрыт";
+      statusElement.style.color = "red";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", updateShopStatus);
+
+</script>
+</body>
+</html>
+
+

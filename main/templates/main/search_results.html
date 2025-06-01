@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibrant Store</title>
+  <link rel="stylesheet" href="{% static 'main/css/tv.css' %}">
+</head>
+<!--     Header -->
+<header class="header">
+  <a href="{% url 'index' %}" class="logo" style="text-decoration: none; color: #00ccff;">vibrant.</a>
+
+  <div class="search-bar">
+    <form action="{% url 'search_results' %}" method="GET">
+        <input type="text" name="q" placeholder="Поиск..." value="{{ request.GET.q }}">
+        <button type="submit">Искать</button>
+    </form>
+</div>
+  <div class="icons">
+    {% if user.is_authenticated %}
+      <span class="cart-btn">Добро пожаловать, {{ user.username }}!</span>
+      <form action="{% url 'logout' %}" method="post" style="display: inline; margin: 0;">
+        {% csrf_token %}
+        <button type="submit" class="cart-btn">🚪 Выйти</button>
+      </form>
+    {% else %}
+      <a href="{% url 'login' %}" class="cart-btn">👤 Вход и регистрация</a> <!-- Используем cart-btn -->
+    {% endif %}
+    {% if user.is_authenticated %}
+  <a href="{% url 'profile' %}"><button class="cart-btn">👤 Профиль</button></a>
+{% endif %}
+    <a href="{% url 'cart' %}">
+    <button class="cart-btn">🛒 Корзина</button>
+</a>
+  </div>
+</header>
+
+    <!-- Categories -->
+<nav class="categories">
+    {% for cat in categories %}
+        <a href="{% url 'category_products' cat.slug %}">
+            <button>{{ cat.name }}</button>
+        </a>
+    {% endfor %}
+</nav>
+
+    <!-- Main Content -->
+<br>
+<br>
+<br>
+<br>
+<br>
+    <main>
+
+<div class="product-card-container">
+    {% for product in products %}
+    <a href="{% url 'product_detail' product.id %}" class="product-card">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        <h3>{{ product.name }}</h3>
+        <p><p>{{ product.base_price }} ₽</p>
+        <button type="button" onclick="event.preventDefault(); addToCart({{ product.id }})">
+            Добавить в корзину
+        </button>
+    </a>  {% empty %}
+    <div class="no-products">
+            <h2>Продукт не найден</h2>
+
+        <img src="{% static 'main/img/not_found.png' %}" alt="О магазине vibrant" style="width: 500px; border-radius: 8px;">
+        </div>
+    {% endfor %}
+</div>
+    </main>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+  <!-- Footer -->
+<footer class="footer">
+  <div class="footer-content">
+    <div class="logo">vibrant.</div>
+    <nav class="footer-nav">
+      <a href="{% url 'about' %}" class="about-link">О нас</a>
+    </nav>
+    <nav class="footer-nav">
+      <a>Контактный номер: 8 495 502-19-44 (9:00 - 21:00) без выходных</a>
+    </nav>
+    <div id="shop-status"></div> <!-- 👈 Новый блок -->
+  </div>
+</footer>
+<script>
+    function addToCart(productId) {
+        fetch("{% url 'add_to_cart' 0 %}".replace('0', productId), {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({ product_id: productId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "redirect") {
+                window.location.href = "{% url 'register' %}";
+            } else if (data.status === "success") {
+                alert("Товар добавлен в корзину!");
+            } else {
+                alert("Ошибка при добавлении товара.");
+            }
+        })
+        .catch(error => console.error("Ошибка:", error));
+    }
+
+  function updateShopStatus() {
+    const now = new Date();
+    const hours = now.getHours();
+
+    const statusElement = document.getElementById("shop-status");
+
+    if (hours >= 9 && hours < 21) {
+      statusElement.textContent = "🟢 Магазин открыт";
+      statusElement.style.color = "green";
+    } else {
+      statusElement.textContent = "🔴 Магазин закрыт";
+      statusElement.style.color = "red";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", updateShopStatus);
+
+</script>
+</body>
+</html>
+
+

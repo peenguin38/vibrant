@@ -1,0 +1,194 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibrant Store</title>
+  <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
+  <link rel="stylesheet" href="{% static 'main/css/tv.css' %}">
+</head>
+<!--     Header -->
+<header class="header">
+  <a href="{% url 'index' %}" class="logo" style="text-decoration: none; color: #00ccff;">vibrant.</a>
+
+  <div class="search-bar">
+    <form action="{% url 'search_results' %}" method="GET">
+        <input type="text" name="q" placeholder="Поиск..." value="{{ request.GET.q }}">
+        <button type="submit">Искать</button>
+    </form>
+</div>
+  <div class="icons">
+    {% if user.is_authenticated %}
+      <span class="cart-btn">Добро пожаловать, {{ user.username }}!</span>
+      <form action="{% url 'logout' %}" method="post" style="display: inline; margin: 0;">
+        {% csrf_token %}
+        <button type="submit" class="cart-btn">🚪 Выйти</button>
+      </form>
+    {% else %}
+      <a href="{% url 'login' %}" class="cart-btn">👤 Вход и регистрация</a>
+    {% endif %}
+    {% if user.is_authenticated %}
+  <a href="{% url 'profile' %}"><button class="cart-btn">👤 Профиль</button></a>
+{% endif %}
+    <a href="{% url 'cart' %}">
+    <button class="cart-btn">🛒 Корзина</button>
+</a>
+  </div>
+</header>
+<body>
+{% if birthday_today and birthday_promo %}
+<div style="position: fixed; bottom: 30px; right: 30px; background: #fff; border: 2px solid #00ccff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 9999;">
+  <h3>🎉 С днём рождения!</h3>
+  Ваш персональный промокод: <strong>{{ birthday_promo.code }}</strong>
+  <p>Скидка: {{ birthday_promo.discount_percent }}%</p>
+</div>
+{% endif %}
+
+
+{% csrf_token %}
+
+
+
+<section class="banner">
+  <div class="banner-content">
+    <h1>Mac mini <span>M4</span></h1>
+    <p class="subtext">Уже в продаже</p>
+  </div>
+  <div class="banner-photo">
+    {% if macmini %}
+      <a href="{% url 'product_detail' macmini.id %}">
+        <img src="{% static 'main/img/macmini.png' %}" alt="Mac mini" class="main-photo">
+      </a>
+    {% else %}
+      <img src="{% static 'main/img/macmini.png' %}" alt="Mac mini" class="main-photo">
+    {% endif %}
+  </div>
+</section>
+
+
+    <!-- Categories Section -->
+    <div class="category-section">
+      <h2 class="category-title">Категории товаров</h2>
+      <div class="category-buttons">
+        {% for category in categories %}
+          <a href="{% url 'category_products' category.slug %}">
+            <button class="category-btn">{{ category.name }}</button>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+<div class="category-section">
+  <h2 class="category-title">Новые товары</h2>
+  <div class="product-card-container">
+    {% for product in latest_products %}
+      <a href="{% url 'product_detail' product.id %}" class="product-card">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        <div class="product-content">
+          <h3>{{ product.name }}</h3>
+          <p>{{ product.base_price }} ₽</p>
+        </div>
+        {% if user.is_authenticated %}
+  <button type="button" onclick="event.preventDefault(); addToCart({{ product.id }})">
+    Добавить в корзину
+  </button>
+{% else %}
+  <button type="button" onclick="event.preventDefault(); showToast('Требуется вход в аккаунт')">
+    Добавить в корзину
+  </button>
+{% endif %}
+      </a>
+    {% endfor %}
+  </div>
+</div>
+<br>
+<br>
+<div class="flash-message-container">
+  <div id="cart-toast" class="flash-message" style="display: none;">
+    <span id="cart-toast-text"></span>
+    <span class="close" onclick="this.parentElement.style.display='none'">×</span>
+  </div>
+</div>
+
+
+    <!-- Footer -->
+<footer class="footer">
+  <div class="footer-content">
+    <div class="logo">vibrant.</div>
+    <nav class="footer-nav">
+      <a href="{% url 'about' %}" class="about-link">О нас</a>
+    </nav>
+    <nav class="footer-nav">
+      <a>Контактный номер: 8 495 502-19-44 (9:00 - 21:00) без выходных</a>
+    </nav>
+    <div id="shop-status"></div> <!-- 👈 Новый блок -->
+  </div>
+</footer>
+    <script src="{% static 'main/jquery/jquery.slim.min.js' %}"></script>
+    <script src="{% static 'main/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script>
+ function updateShopStatus() {
+    const now = new Date();
+    const hours = now.getHours();
+
+    const statusElement = document.getElementById("shop-status");
+
+    if (hours >= 9 && hours < 21) {
+      statusElement.textContent = "🟢 Магазин открыт";
+      statusElement.style.color = "green";
+    } else {
+      statusElement.textContent = "🔴 Магазин закрыт";
+      statusElement.style.color = "red";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", updateShopStatus);
+
+function showToast(message) {
+  const toast = document.getElementById('cart-toast');
+  const toastText = document.getElementById('cart-toast-text');
+
+  toastText.innerText = message;
+  toast.style.display = 'flex';
+  toast.style.opacity = '1';
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => {
+      toast.style.display = 'none';
+    }, 500);
+  }, 4000);
+}
+
+
+function addToCart(productId) {
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+  if (!csrfToken) {
+    showToast("Требуется вход в аккаунт");
+    return;
+  }
+
+  fetch(`/add-to-cart/${productId}/`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': csrfToken.value,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: ""
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'success') {
+      showToast("Товар добавлен в корзину");
+    } else {
+      showToast(data.message || "Ошибка при добавлении");
+    }
+  })
+  .catch(() => {
+    showToast("Не удалось добавить в корзину");
+  });
+}
+</script>
+</body>
+</html>

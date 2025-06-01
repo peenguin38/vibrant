@@ -1,0 +1,213 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibrant Store</title>
+  <link rel="stylesheet" href="{% static 'main/css/tv.css' %}">
+</head>
+<!--     Header -->
+<header class="header">
+  <a href="{% url 'index' %}" class="logo" style="text-decoration: none; color: #00ccff;">vibrant.</a>
+
+  <div class="search-bar">
+    <form action="{% url 'search_results' %}" method="GET">
+        <input type="text" name="q" placeholder="Поиск..." value="{{ request.GET.q }}">
+        <button type="submit">Искать</button>
+    </form>
+</div>
+  <div class="icons">
+    {% if user.is_authenticated %}
+      <span class="cart-btn">Добро пожаловать, {{ user.username }}!</span>
+      <form action="{% url 'logout' %}" method="post" style="display: inline; margin: 0;">
+        {% csrf_token %}
+        <button type="submit" class="cart-btn">🚪 Выйти</button>
+      </form>
+    {% else %}
+      <a href="{% url 'login' %}" class="cart-btn">👤 Вход и регистрация</a> <!-- Используем cart-btn -->
+    {% endif %}
+    {% if user.is_authenticated %}
+  <a href="{% url 'profile' %}"><button class="cart-btn">👤 Профиль</button></a>
+{% endif %}
+    <a href="{% url 'cart' %}">
+    <button class="cart-btn">🛒 Корзина</button>
+</a>
+  </div>
+</header>
+    <!-- Обёртка для основного контента -->
+    <div class="container">
+        <nav class="categories">
+            {% for cat in categories %}
+                <a href="{% url 'category_products' cat.slug %}">
+                    <button>{{ cat.name }}</button>
+                </a>
+            {% endfor %}
+        </nav>
+
+        <main>
+{% load custom_filters %}
+
+<!-- Модальное окно фильтров -->
+<div id="filterDrawer" class="filter-drawer">
+  <div class="filter-drawer-header">
+    <h3>Фильтры</h3>
+    <button onclick="closeDrawer()" class="drawer-close">&times;</button>
+  </div>
+  <div class="filter-drawer-body">
+  <form method="get">
+  {% for char in characteristics %}
+    <h4>{{ char.name }}</h4>
+    {% for val in filter_values|get_item:char.name %}
+      <label style="display: block; margin-bottom: 4px;">
+        <input type="checkbox" name="filter_{{ char.name }}" value="{{ val }}"
+               {% if selected_filters|get_item:char.name and val in selected_filters|get_item:char.name %}checked{% endif %}>
+        {{ val }}
+      </label>
+    {% endfor %}
+  {% endfor %}
+
+  <div style="display: flex; align-items: center; margin-top: 20px;">
+    <button type="submit" class="apply-btn">Применить</button>
+    <a href="?sort={{ request.GET.sort }}" class="clear-btn">Очистить</a>
+  </div>
+</form>
+  </div>
+</div>
+
+
+
+
+            <section class="product-listing">
+                <h1>{{ category.name }}</h1>
+                <span>{{ products.count }} {{ products.count|pluralize_ru:"товар,товара,товаров" }}</span>
+                <div class="filters-pagination">
+                    <button class="filters-btn" onclick="openDrawer()">Фильтры</button>
+
+                    <form method="get" class="sort-form">
+  <select name="sort" class="sort-dropdown" onchange="this.form.submit()">
+      <option value="">По умолчанию</option>
+      <option value="price_asc" {% if request.GET.sort == "price_asc" %}selected{% endif %}>Цена: Низкая – Высокая</option>
+      <option value="price_desc" {% if request.GET.sort == "price_desc" %}selected{% endif %}>Цена: Высокая – Низкая</option>
+  </select>
+</form>
+
+                </div>
+                <div class="product-card-container">
+                    {% for product in products %}
+                       <a href="{% url 'product_detail' product.id %}" class="product-card">
+  <img src="{{ product.image.url }}" alt="{{ product.name }}">
+
+  <div class="product-content">
+    <h3>{{ product.name }}</h3>
+    <p>{{ product.base_price }} ₽</p>
+  </div>
+
+{% if user.is_authenticated %}
+  <button type="button" onclick="event.preventDefault(); addToCart({{ product.id }})">
+    Добавить в корзину
+  </button>
+{% else %}
+  <button type="button" onclick="event.preventDefault(); showToast('Требуется вход в аккаунт')">
+    Добавить в корзину
+  </button>
+{% endif %}
+</a>
+                    {% endfor %}
+                </div>
+            </section>
+        </main>
+    </div>
+<div class="flash-message-container">
+  <div id="cart-toast" class="flash-message" style="display: none;">
+    <span id="cart-toast-text"></span>
+    <span class="close" onclick="this.parentElement.style.display='none'">×</span>
+  </div>
+</div>
+
+  <!-- Footer -->
+<footer class="footer">
+  <div class="footer-content">
+    <div class="logo">vibrant.</div>
+    <nav class="footer-nav">
+      <a href="{% url 'about' %}" class="about-link">О нас</a>
+    </nav>
+    <nav class="footer-nav">
+      <a>Контактный номер: 8 495 502-19-44 (9:00 - 21:00) без выходных</a>
+    </nav>
+    <div id="shop-status"></div> <!-- 👈 Новый блок -->
+  </div>
+</footer>
+<script>
+    function addToCart(productId) {
+        fetch("{% url 'add_to_cart' 0 %}".replace('0', productId), {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({ product_id: productId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "redirect") {
+                window.location.href = "{% url 'register' %}";
+            } else if (data.status === "success") {
+                alert("Товар добавлен в корзину!");
+            } else {
+                alert("Ошибка при добавлении товара.");
+            }
+        })
+        .catch(error => console.error("Ошибка:", error));
+    }
+
+
+  function updateShopStatus() {
+    const now = new Date();
+    const hours = now.getHours();
+
+    const statusElement = document.getElementById("shop-status");
+
+    if (hours >= 9 && hours < 21) {
+      statusElement.textContent = "🟢 Магазин открыт";
+      statusElement.style.color = "green";
+    } else {
+      statusElement.textContent = "🔴 Магазин закрыт";
+      statusElement.style.color = "red";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", updateShopStatus);
+
+
+  const drawer = document.getElementById('filterDrawer');
+  const filtersBtn = document.querySelector('.filters-btn');
+
+  filtersBtn.addEventListener('click', () => {
+    drawer.classList.toggle('open');
+  });
+
+  function closeDrawer() {
+    drawer.classList.remove('open');
+  }
+
+function showToast(message) {
+    const toast = document.getElementById('cart-toast');
+    const toastText = document.getElementById('cart-toast-text');
+
+    toastText.innerText = message;
+    toast.style.display = 'flex';
+    toast.style.opacity = '1';
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 500);
+    }, 4000);
+  }
+
+</script>
+</body>
+</html>

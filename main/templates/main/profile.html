@@ -1,0 +1,409 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Профиль — vibrant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'main/css/main_two.css' %}">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0faff;
+    }
+
+    .auth-section {
+      display: flex;
+      justify-content: center;
+      padding: 60px 20px 40px;
+      background: linear-gradient(135deg, #ffffff, #e3f7ff);
+    }
+
+    .form-container {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .profile-title {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 30px;
+      font-weight: bold;
+      color: #00ccff;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      color: #000;
+    }
+
+    .form-button {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: #00ccff;
+      color: white;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background .3s ease;
+    }
+
+    .orders-section-wrapper {
+      background: linear-gradient(135deg, #f2fcff, #ffffff);
+      padding: 60px 20px;
+    }
+
+    .orders-section {
+      background: white;
+      padding: 35px 40px;
+      border-radius: 16px;
+      max-width: 1000px;
+      margin: 0 auto;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+    }
+
+    .orders-section h2 {
+      font-size: 28px;
+      font-weight: bold;
+      color: #00ccff;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .orders-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .orders-table th, .orders-table td {
+      padding: 14px;
+      text-align: center;
+      font-size: 15px;
+    }
+
+    .orders-table th {
+      background-color: #00ccff;
+      color: white;
+    }
+
+    .orders-table td {
+      background-color: #fefefe;
+      color: #333;
+    }
+
+    .orders-table tr:nth-child(even) td {
+      background-color: #f4faff;
+    }
+
+    .orders-table tr:hover td {
+      background-color: #e6f7ff;
+    }
+
+    .orders-table tr {
+      transition: background 0.2s ease;
+    }
+
+    .footer {
+      background: #111;
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .footer .logo {
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .footer-nav {
+      margin: 10px 0;
+    }
+
+    .footer-nav a {
+      color: #ccc;
+      margin: 0 10px;
+      text-decoration: none;
+    }
+
+    .footer-nav a:hover {
+      color: white;
+    }
+
+    .order-card {
+  background: #fefefe;
+  border-radius: 12px;
+  padding: 20px 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+  color: #000; /* делаем жирные подписи тоже чёрными */
+}
+
+.order-header {
+  font-size: 18px;
+  color: #00ccff;
+  margin-bottom: 10px;
+}
+
+.order-details p {
+  margin: 4px 0;
+  color: #444;
+}
+
+.order-items table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.order-items th, .order-items td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+.order-items th {
+  background-color: #e3f7ff;
+  color: #333;
+}
+
+    .order-info {
+  color: #000; /* делаем чёрный цвет текста */
+  margin-bottom: 20px;
+}
+
+.order-info b {
+  color: #000; /* делаем жирные подписи тоже чёрными */
+}
+    .flash-message-container {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 9999;
+}
+
+.flash-message {
+  background: #e3f7ff;
+  color: white;
+  padding: 14px 24px;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 260px;
+  opacity: 1;
+  animation: fadeOut 5s forwards;
+  position: fixed;
+  bottom: 20px;   /* 👈 вместо top */
+  right: 20px;
+  background-color: #00ccff;
+  color: white;
+  padding: 14px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  animation: fadeOut 5s ease forwards;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.flash-message .close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  cursor: pointer;
+  font-size: 20px;
+  color: #fff;
+}
+
+.flash-close:hover {
+  opacity: 0.7;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; display: none; }
+}
+
+  </style>
+</head>
+<body>
+
+<!--     Header -->
+<header class="header">
+  <a href="{% url 'index' %}" class="logo" style="text-decoration: none; color: #00ccff;">vibrant.</a>
+
+  <div class="search-bar">
+    <form action="{% url 'search_results' %}" method="GET">
+        <input type="text" name="q" placeholder="Поиск..." value="{{ request.GET.q }}">
+        <button type="submit">Искать</button>
+    </form>
+</div>
+  <div class="icons">
+    {% if user.is_authenticated %}
+      <span class="cart-btn">Добро пожаловать, {{ user.username }}!</span>
+      <form action="{% url 'logout' %}" method="post" style="display: inline; margin: 0;">
+        {% csrf_token %}
+        <button type="submit" class="cart-btn">🚪 Выйти</button>
+      </form>
+    {% else %}
+      <a href="{% url 'login' %}" class="cart-btn">👤 Вход и регистрация</a> <!-- Используем cart-btn -->
+    {% endif %}
+    {% if user.is_authenticated %}
+  <a href="{% url 'profile' %}"><button class="cart-btn">👤 Профиль</button></a>
+{% endif %}
+    <a href="{% url 'cart' %}">
+    <button class="cart-btn">🛒 Корзина</button>
+</a>
+  </div>
+</header>
+
+<section class="auth-section">
+  <div class="form-container">
+    <h1 class="profile-title">Профиль</h1>
+    <form method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label>Имя пользователя</label>
+        <input type="text" name="username" class="form-input" value="{{ user.username }}">
+      </div>
+
+      <div class="form-group">
+        <label>Фамилия</label>
+        <input type="text" name="last_name" class="form-input" value="{{ user.profile.last_name }}">
+      </div>
+
+      <div class="form-group">
+        <label>Отчество</label>
+        <input type="text" name="middle_name" class="form-input" value="{{ user.profile.middle_name }}">
+      </div>
+
+      <div class="form-group">
+        <label>Электронная почта</label>
+        <input type="email" name="email" class="form-input" value="{{ user.email }}">
+      </div>
+
+      <div class="form-group" style="position: relative;">
+  <label>Новый пароль</label>
+  <input type="password" id="passwordInput" name="new_password" class="form-input">
+  <span onclick="togglePassword()" style="position: absolute; right: 15px; top: 42px; cursor: pointer;">
+    👁️
+  </span>
+</div>
+      {% if messages %}
+  <div class="flash-message-container">
+    {% for message in messages %}
+      <div class="flash-message">
+  {{ message }}
+  <span class="close" onclick="this.parentElement.remove()">×</span>
+</div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+
+
+      <button type="submit" class="form-button">Сохранить изменения</button>
+    </form>
+  </div>
+</section>
+
+<section class="orders-section-wrapper">
+  <div class="form-container orders-section">
+    <h2>История заказов</h2>
+
+    {% for order in user_orders %}
+  <div class="order-card">
+    <p><strong>Заказ №<span style="color:#00ccff">{{ order.code }}</span></strong> — {{ order.created_at|date:"Y-m-d H:i" }}</p>
+    <p><strong>Статус:</strong> {{ order.get_status_display }}</p>
+    <p><strong>Пункт самовывоза:</strong> {{ order.pickup_location }}</p>
+    <p><strong>Сумма:</strong> {{ order.total_price|floatformat:2 }} ₽</p>
+
+    <table class="orders-table">
+      <thead>
+        <tr>
+          <th>Изображение</th>
+          <th>Товар</th>
+          <th>Кол-во</th>
+          <th>Цена</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in order.items.all %}
+        <tr>
+          <td><img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width:60px; border-radius: 8px;"></td>
+          <td>{{ item.product.name }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.final_price|floatformat:2 }} ₽</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endfor %}
+  </div>
+</section>
+
+
+  <!-- Footer -->
+<footer class="footer">
+  <div class="footer-content">
+    <div class="logo">vibrant.</div>
+    <nav class="footer-nav">
+      <a href="{% url 'about' %}" class="about-link">О нас</a>
+    </nav>
+    <nav class="footer-nav">
+      <a>Контактный номер: 8 495 502-19-44 (9:00 - 21:00) без выходных</a>
+    </nav>
+    <div id="shop-status"></div> <!-- 👈 Новый блок -->
+  </div>
+</footer>
+
+<script>
+  function updateShopStatus() {
+    const now = new Date();
+    const statusElement = document.getElementById("shop-status");
+    statusElement.textContent =
+      (now.getHours() >= 9 && now.getHours() < 21)
+        ? "🟢 Магазин открыт"
+        : "🔴 Магазин закрыт";
+    statusElement.style.color = (now.getHours() >= 9 && now.getHours() < 21) ? "green" : "red";
+  }
+  document.addEventListener("DOMContentLoaded", updateShopStatus);
+
+  function togglePassword() {
+    const input = document.getElementById("passwordInput");
+    input.type = input.type === "password" ? "text" : "password";
+  }
+</script>
+</body>
+</html>
+
